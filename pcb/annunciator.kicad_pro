@@ -70,7 +70,16 @@
         }
       },
       "diff_pair_dimensions": [],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        [
+          "silk_overlap|111845237|80502438|5c0875db-9819-4466-94e0-17e915cc528e|efe26f7b-1134-4eda-acfc-391d34e1eb51",
+          ""
+        ],
+        [
+          "text_thickness|53750000|78250000|e3d8dcef-0e83-467a-98a4-4c3e6520b4af|00000000-0000-0000-0000-000000000000",
+          ""
+        ]
+      ],
       "meta": {
         "version": 2
       },
@@ -545,9 +554,9 @@
     "last_paths": {
       "idf": "",
       "netlist": "",
-      "plot": "",
+      "plot": "pcb/gerbers",
       "specctra_dsn": "",
-      "step": "",
+      "step": "annunciator.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
@@ -682,7 +691,7 @@
         "uuid": "38f50527-b4d3-4b63-9168-a497649b644b"
       }
     ],
-    "used_designators": "#FLG1-3,R1-23,J1-4,D1-13,#PWR1-53,U1-2,C1-3,Q1-5,LS1,SW1-3",
+    "used_designators": "#FLG1-3,R1-29,J1-4,D1-13,#PWR1-59,U1-2,C1-3,Q1-8,LS1,SW1-3",
     "variants": []
   },
   "sheets": [
