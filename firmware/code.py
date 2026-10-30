@@ -38,13 +38,15 @@ def shift_out(tiles):
     for i in range(12):
         if tiles[i]:
             if i >= 8:
-                # white row is inverted, ON means bit is 0
-                pass
-            else:
+                # white row is inverted, ON means bit is 1
                 bits = bits | (1 << i)
+            else:
+                # red and yellow are normal, ON means bit is 0
+                pass
         else:
             if i >= 8:
-                # white row OFF means bit is 1
+                pass
+            else:
                 bits = bits | (1 << i)
 
     lo = bits & 0xFF         # U1
