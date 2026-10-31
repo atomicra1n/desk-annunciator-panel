@@ -107,6 +107,7 @@ def click():
 # ---------------------------------------
 
 # config from settings.toml
+GEIGER_IP = os.getenv("GEIGER_IP", "")
 DEMO_MODE = os.getenv("DEMO_MODE", "1") == "1"
 
 # geiger alarms config
