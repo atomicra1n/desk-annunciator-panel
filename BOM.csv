@@ -2,4 +2,5 @@ Item,Qty,Supplier,Cost/item,Total Cost,link
 PCB Manufacturing,1,JLCPCB,$4.00,$4.00,https://jlcpcb.com
 CONNFLY BL120G-V8.5 female header 1x20pin,3,GM Electronic,$0.45,$1.35,https://www.gme.cz/v/1498892/connfly-bl120g-v85-dutinkova-lista-1x20pin-roztec-254mm-vyska-85mm
 LED display seven segment MAX7219,1,GM Electronic,$3.57,$3.57,https://www.gme.cz/v/1508913/led-displej-8x7-segmentu-cerveny
+Texas Instruments SN74HC595N,2,GM Electronic,$1.71,$3.42,https://www.gme.cz/v/1490931/texas-instruments-sn74hc595n-cmos-8bit-posuvny-registr-se-seriovym-vstupem-s-vystupnym-registrem
 Estimated total shipping,1,,,$0.00,
