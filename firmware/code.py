@@ -1,20 +1,8 @@
 import board
-import busio
 import digitalio
+import pwmio
 import time
-
-# shift register pins
-spi = busio.SPI(clock=board.GP18, MOSI=board.GP19)
-while not spi.try_lock():
-    pass
-spi.configure(baudrate=1000000, polarity=0, phase=0)
-
-latch = digitalio.DigitalInOut(board.GP17)
-latch.direction = digitalio.Direction.OUTPUT
-
-oe = digitalio.DigitalInOut(board.GP16)
-oe.direction = digitalio.Direction.OUTPUT
-oe.value = True  # leds off for now
+import tiles
 
 # buttons
 btn_ack = digitalio.DigitalInOut(board.GP2)
@@ -29,98 +17,161 @@ btn_test = digitalio.DigitalInOut(board.GP4)
 btn_test.direction = digitalio.Direction.INPUT
 btn_test.pull = digitalio.Pull.UP
 
-def shift_out(tiles):
-    # tiles is a list of 12 booleans
-    # we need to convert to 2 bytes for the shift registers
-    # tiles 0-7 go to U1 shift register and tiles 8-11 go to U2
-    # the white row (8-11) has transistors so the logic is flipped!!!!!!
-    bits = 0
-    for i in range(12):
-        if tiles[i]:
-            if i >= 8:
-                # white row is inverted, ON means bit is 1
-                bits = bits | (1 << i)
+# max7219 display
+# these go through level shifters so everything is INVERTED!!!
+# pico HIGH = max7219 LOW
+disp_din = digitalio.DigitalInOut(board.GP11)
+disp_din.direction = digitalio.Direction.OUTPUT
+disp_clk = digitalio.DigitalInOut(board.GP10)
+disp_clk.direction = digitalio.Direction.OUTPUT
+disp_cs = digitalio.DigitalInOut(board.GP13)
+disp_cs.direction = digitalio.Direction.OUTPUT
+disp_cs.value = False  
+
+def disp_send(addr, data):
+    disp_cs.value = True
+    # send 16 bits with most significant bit first, all bits inverted
+    for val in [addr, data]:
+        for bit in range(7, -1, -1):
+            if (val >> bit) & 1:
+                disp_din.value = False # inverted meaning pico low, max sees high
             else:
-                # red and yellow are normal, ON means bit is 0
-                pass
-        else:
-            if i >= 8:
-                pass
-            else:
-                bits = bits | (1 << i)
+                disp_din.value = True
+            disp_clk.value = True
+            disp_clk.value = False
+    disp_cs.value = False
 
-    lo = bits & 0xFF         # U1
-    hi = (bits >> 8) & 0xFF  # U2
-    latch.value = False
-    spi.write(bytes([hi, lo]))
-    latch.value = True
+def disp_setup():
+    disp_send(0x0C, 0x01)  # not shutdown
+    disp_send(0x09, 0xFF)  # decode
+    disp_send(0x0B, 0x07)  # scan all 8
+    disp_send(0x0A, 0x07)  # brightness
+    disp_send(0x0F, 0x00)  # test off
+    for d in range(1, 9):
+        disp_send(d, 0x0F)
 
-# begin test
-oe.value = False
-print("annunciator test")
+def disp_number(start_digit, text):
+    # show a string of digits
+    pos = start_digit
+    for ch in text:
+        if ch == '.':
+            # add dot to previous digit
+            if pos > start_digit:
+                # resend previous digit with dot 
+                prev = text[text.index('.') - 1]
+                if prev.isdigit():
+                    disp_send(pos - 1, int(prev) | 0x80)
+        elif ch == ' ':
+            disp_send(pos, 0x0F)
+            pos = pos + 1
+        elif ch.isdigit():
+            disp_send(pos, int(ch))
+            pos = pos + 1
 
-# all tiles on
-all_on = [True] * 12
-all_off = [False] * 12
-shift_out(all_on)
-time.sleep(1)
-shift_out(all_off)
-time.sleep(0.5)
+def show_readings(cpm, usvh):
+    # cpm on digits 1-4, usvh on 5-8
+    cpm_str = str(int(cpm)).rjust(4)
+    disp_number(1, cpm_str)
 
-# test by lighting each tile individually
-print("lamp test")
-for i in range(12):
-    t = [False] * 12
-    t[i] = True
-    shift_out(t)
-    time.sleep(0.15)
+    if usvh < 10:
+        usv_str = "{:.2f}".format(usvh)
+    elif usvh < 100:
+        usv_str = "{:.1f}".format(usvh)
+    else:
+        usv_str = str(int(usvh)).rjust(4)
+    disp_number(5, usv_str)
 
-shift_out(all_off)
-time.sleep(0.3)
+# sounds are just simple beeps for now
+def beep(freq, ms):
+    p = pwmio.PWMOut(board.GP15, frequency=freq, duty_cycle=32768)
+    time.sleep(ms / 1000)
+    p.deinit()
 
-# flash all tiles twice
-for _ in range(2):
-    shift_out(all_on)
-    time.sleep(0.2)
-    shift_out(all_off)
-    time.sleep(0.2)
+def horn():
+    beep(800, 100)
+    beep(1200, 100)
 
-print("led test PASS")
-print("ACK = toggle red row, RESET = clear, TEST = all on")
+def click():
+    beep(2500, 5)
 
-tiles = [False] * 12
+# --------------------------------------
+# BEGIN MAIN LOOP
+# ---------------------------------------
+
+tiles.setup()
+disp_setup()
+click()
+
+print("annunciator panel")
+
+# demo
+demo_tiles = [0, 1, 4, 8]
+demo_idx = 0
+demo_timer = time.monotonic()
+demo_on = False
+demo_tile = -1
+
+cpm = 22
+usvh = 0.14
+
 prev_ack = True
 prev_reset = True
 prev_test = True
+test_held = False
+
+print("demo mode, use buttons to interact")
 
 while True:
-    a = btn_ack.value    # False when pressed
+    now = time.monotonic()
+
+    if now - demo_timer > 3.5:
+        demo_timer = now
+        if demo_on:
+            tiles.set_condition(demo_tile, False)
+            demo_on = False
+            cpm = 22
+            usvh = 0.14
+        else:
+            demo_tile = demo_tiles[demo_idx]
+            tiles.set_condition(demo_tile, True)
+            demo_idx = (demo_idx + 1) % len(demo_tiles)
+            demo_on = True
+            if demo_tile < 4:
+                cpm = 380
+                usvh = cpm * 0.0066
+            #print("triggered tile", demo_tile)
+
+    # buttons
+    a = btn_ack.value
     r = btn_reset.value
     t = btn_test.value
 
-    # toggle red row on ACK press
     if not a and prev_ack:
-        print("ACK")
-        for i in range(4):
-            tiles[i] = not tiles[i]
-        shift_out(tiles)
+        tiles.ack()
+        beep(1800, 40)
 
-    # clear on RESET
     if not r and prev_reset:
-        print("RESET")
-        tiles = [False] * 12
-        shift_out(tiles)
+        tiles.reset()
+        click()
 
-    # test button lights everything while held
     if not t and prev_test:
-        print("TEST")
-        shift_out(all_on)
+        test_held = True
     if t and not prev_test:
-        # released
-        shift_out(tiles)
+        test_held = False
 
     prev_ack = a
     prev_reset = r
     prev_test = t
 
-    time.sleep(0.02)
+    # test overrides everything
+    if test_held:
+        tiles.shift_out([True] * 12)
+    else:
+        tiles.update()
+        show_readings(cpm, usvh)
+
+    # horn when something is flashing
+    if tiles.any_flashing() and not test_held:
+        horn()
+
+    time.sleep(0.05)
