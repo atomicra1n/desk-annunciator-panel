@@ -1,2 +1,21 @@
 Item,Qty,Supplier,Cost/item,Total Cost,link
-Estimated total shipping,1,,,$0.00,
+PCB Manufacturing,1,JLCPCB,$4.00,$4.00,https://jlcpcb.com
+CONNFLY BL120G-V8.5 female header 1x20pin,3,GM Electronic,$0.45,$1.35,https://www.gme.cz/v/1498892/connfly-bl120g-v85-dutinkova-lista-1x20pin-roztec-254mm-vyska-85mm
+LED display seven segment MAX7219,1,GM Electronic,$3.57,$3.57,https://www.gme.cz/v/1508913/led-displej-8x7-segmentu-cerveny
+Texas Instruments SN74HC595N,2,GM Electronic,$1.71,$3.42,https://www.gme.cz/v/1490931/texas-instruments-sn74hc595n-cmos-8bit-posuvny-registr-se-seriovym-vstupem-s-vystupnym-registrem
+KLS DIL16PZ socket,2,GM Electronic,$0.57,$1.14,https://www.gme.cz/v/1499942/kls-dil16pz-patice
+Lucky Light red LED 5 mm,4,GM Electronic,$0.14,$0.56,https://www.gme.cz/v/1495977/lucky-light-503vd2e-v1-4i-led-5mm-cervena
+Lucky Light yellow LED 5 mm,4,GM Electronic,$0.17,$0.68,https://www.gme.cz/v/1496003/lucky-light-503uyd2e-y2-4g-led-5mm-zluta
+OptoSupply white LED 5 mm,4,GM Electronic,$0.36,$1.44,https://www.gme.cz/v/1491945/optosupply-osw5dk6ee2a-led-5mm-studena-bila
+Resistor 270 ohm 0207,10,GM Electronic,$0.10,$1.00,https://www.gme.cz/v/1488130/gym-cym-rm-270r-06w-1-0207-metalizovany-rezistor
+Resistor 330 ohm 0207,10,GM Electronic,$0.10,$1.00,https://www.gme.cz/v/1494116/gym-cym-rm-330r-06w-1-0207-metalizovany-rezistor
+Resistor 47 ohm 0207,10,GM Electronic,$0.10,$1.00,https://www.gme.cz/v/1493086/gym-cym-rm-47r-06w-1-0207-metalizovany-rezistor
+Resistor 1 kiloohm 0207,10,GM Electronic,$0.10,$1.00,https://www.gme.cz/v/1486228/gym-cym-rm-1k-06w-1-0207-metalizovany-rezistor
+Resistor 10 kiloohm 0207,10,GM Electronic,$0.10,$1.00,https://www.gme.cz/v/1494150/gym-cym-rm-10k-06w-1-0207-metalizovany-rezistor
+SEMTECH 2N3904 transistor,18,GM Electronic,$0.06,$1.08,https://www.gme.cz/v/1487027/semtech-2n3904-bipolarni-tranzistor
+SEMTECH 1N4148 diode,19,GM Electronic,$0.04,$0.76,https://www.gme.cz/v/1487018/semtech-1n4148-dioda
+HITANO CK 100n/50V,3,GM Electronic,$0.25,$0.75,https://www.gme.cz/v/1489676/hitano-ck-100n-50v-x7r-rm508-10-keramicky-kondenzator
+HITANO CE 47u/16V,16,GM Electronic,$0.05,$0.80,https://www.gme.cz/v/1489745/hitano-ce-47u-16vt-hit-emr-5x7-rm2-bulk-elektrolyticky-kondenzator
+Kingstate KSSG3108 speaker,1,GM Electronic,$2.36,$2.36,https://www.gme.cz/v/1498669/kingstate-kssg3108-magnetodynamicky-menic
+Diptronic DTS62K switch,3,GM Electronic,$0.25,$0.75,https://www.gme.cz/v/1501370/diptronic-dts62k-mikrospinac
+Estimated total shipping,1,,,$10.00,
